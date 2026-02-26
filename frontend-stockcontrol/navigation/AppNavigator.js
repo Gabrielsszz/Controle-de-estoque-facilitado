@@ -1,8 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useContext } from 'react';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const linking = {
   prefixes: ['https://react-stockcontrol.vercel.app'],
