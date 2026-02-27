@@ -2,6 +2,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useContext } from 'react';
 import { AuthContext } from '../auth/AuthContext';
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import Dashboard from '../screens/DashBoard';
+import Stock from '../screens/Stock';
+
 const Stack = createNativeStackNavigator();
 
 const linking = {
