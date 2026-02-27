@@ -5,7 +5,7 @@ import { useContext } from 'react';
 const Stack = createNativeStackNavigator();
 
 const linking = {
-  prefixes: ['https://react-stockcontrol.vercel.app'],
+  prefixes: ['https://controle-de-estoque-facilitado.vercel.app'],
   config: {
     screens: {
       Login: 'login',
