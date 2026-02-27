@@ -4,55 +4,84 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🔄 Carregar token ao abrir o app
   useEffect(() => {
-    setLoading(false);
+    async function loadToken() {
+      const storedToken = await AsyncStorage.getItem("@token");
+      if (storedToken) setToken(storedToken);
+      setLoading(false);
+    }
+
+    loadToken();
   }, []);
 
+  // 🔐 LOGIN
   async function signIn(email, password) {
     if (!email || !password) return false;
 
-    const storedUsers = await AsyncStorage.getItem("@users");
-    const users = storedUsers ? JSON.parse(storedUsers) : [];
+    try {
+      const response = await fetch(
+        "https://controle-de-estoque-facilitado.onrender.com/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
-    const foundUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
+      const data = await response.json();
 
-    if (foundUser) {
-      setUser(foundUser);
-      return true;
+      if (response.ok) {
+        await AsyncStorage.setItem("@token", data.token);
+        setToken(data.token);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
     }
-
-    return false;
   }
 
+  // 📝 CADASTRO
   async function signUp({ name, email, password }) {
-    if (!name || !email || !password) return false;
+    try {
+      const response = await fetch(
+        "https://controle-de-estoque-facilitado.onrender.com/auth/register", 
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        }
+      );
 
-    const storedUsers = await AsyncStorage.getItem("@users");
-    const users = storedUsers ? JSON.parse(storedUsers) : [];
-
-    const userExists = users.some((u) => u.email === email);
-    if (userExists) return false;
-
-    const newUser = { name, email, password };
-
-    users.push(newUser);
-    await AsyncStorage.setItem("@users", JSON.stringify(users));
-
-    return true;
+      return response.ok;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
-  function signOut() {
-    setUser(null);
+  // 🚪 LOGOUT
+  async function signOut() {
+    await AsyncStorage.removeItem("@token");
+    setToken(null);
   }
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, signIn, signUp, signOut }}
+      value={{
+        token,
+        signed: !!token,
+        loading,
+        signIn,
+        signUp,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>
