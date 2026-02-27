@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useContext } from 'react';
-
+import { AuthContext } from '../auth/AuthContext';
 const Stack = createNativeStackNavigator();
 
 const linking = {
